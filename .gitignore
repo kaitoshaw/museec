@@ -1,4 +1,2 @@
-__pycache__
-*.pyc
-cred.py
-assets
+database
+notebook.cfg
