@@ -1,32 +1,36 @@
-import numpy as np
+import pandas as pd
+import os
 from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+os.chdir('..')
+from functions import querySong
 
-# Example dataset (feature vectors for 4 songs)
-# Replace this with your actual dataset
-feature_vectors = np.array([
-    [0.8, 0.2, 0.4],  # Index 0
-    [0.5, 0.7, 0.9],  # Index 1
-    [0.3, 0.1, 0.6],  # Index 2
-    [0.2, 0.4, 0.5]   # Index 3
-])
+# Load the first 1000 songs in the dataset
+df = pd.read_csv('dataset/partial.csv')
+feature_vectors = []
+
+# Only select several columns
+columns = [8, 9, 11, 12, 13, 14, 15, 16, 17]
+for row in range(len(df)):
+    temp = []
+    for column in columns:
+        temp.append(df.iloc[row][column])
+    feature_vectors.append(temp)
 
 # Calculate cosine similarity matrix
 cosine_sim_matrix = cosine_similarity(feature_vectors)
 
-print(cosine_sim_matrix)
-
-# Example query song (feature vector)
-# Replace this with the feature vector of the song you want to find similar songs for
-query_song = np.array([[0.3, 0.1, 0.8]])
+# Get song based on the ID
+query_song = [querySong('0bC7GKnxh9W9JIvJ6HVWxc')]
 
 # Calculate cosine similarity between the query song and all other songs
 cosine_similarities = cosine_similarity(query_song, feature_vectors)
-print(cosine_similarities)
 
 # Get the most similar song index
 most_similar_song_index = np.argmax(cosine_similarities)
 
-# Print the most similar song index and its corresponding similarity score
-print("Most similar song index:", most_similar_song_index)
-print("Similarity score:", cosine_similarities[0, most_similar_song_index])
+# # Print the most similar song index and its corresponding similarity score
+# print("Most similar song index:", most_similar_song_index)
+# print("Similarity score:", cosine_similarities[0, most_similar_song_index])
 
+print(df.iloc[most_similar_song_index])
