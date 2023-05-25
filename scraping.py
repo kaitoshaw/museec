@@ -157,11 +157,10 @@ with open(csv_file_path, 'w', newline='') as file:
   for row in main_data:
     writer.writerow(row)
     iterator += 1
-    print(f"Wrote row number '{iterator}' successfully.")
+    
 print(f"CSV file '{csv_file_path}' created successfully.")
 
 #%% Dataframe creation
-
 df = pd.read_csv('output.csv')
 
 df.iloc[0]
