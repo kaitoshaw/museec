@@ -5,6 +5,8 @@ from configparser import ConfigParser
 import requests
 import json
 import re
+import csv
+import pandas as pd
 
 #%% Get Token
 
@@ -26,174 +28,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 
 AccessToken = json.loads(response.text)['access_token']
 
-#%% Get ID from the playlist
-## What are the song characteristics you want to extract? Everything.
-
-### INPUT PLAYLIST ID HERE ###
-link = 'https://open.spotify.com/playlist/37i9dQZF1E36tDNad90Y3t?si=d6cbf006bb604238'
-
-playlist_id = re.search(r'(?<=playlist/)\w+', link).group()
-
-
-# Playlist Detail
-url = f"https://api.spotify.com/v1/playlists/{playlist_id}"
-
-payload={}
-headers = {
-  'Authorization': f'Bearer {AccessToken}'
-}
-
-playlistDetails = requests.get(url, headers=headers, data=payload).json()
-
-print(f"Playlist Name: {playlistDetails['name']}")
-
-#%% Get Tracks from the playlist
-
-import requests
-
-url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-
-payload={}
-headers = {
-  'Authorization': f'Bearer {AccessToken}'
-}
-
-response = requests.get(url, headers=headers, data=payload).json()
-
-id_list = []
-id_list = [song['track']['id'] for song in response['items']]
-
-#%% Get Artists' ID from the song
-
-artist_list = []
-popularity = []
-for _ in id_list:
-    url = f"https://api.spotify.com/v1/tracks/{_}"
-
-    headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer {AccessToken}'
-    }
-
-    response = requests.get(url, headers=headers, data=payload).json()
-
-    artist_list.append(response['artists'][0]['id'])
-
-
-#%% Get artist Genre
-
-for artist in artist_list: 
-    url = f'https://api.spotify.com/v1/artists/{artist}'
-
-    payload = {}
-    headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer {AccessToken}'
-    }
-
-    response = requests.get(url, headers=headers, data=payload).json()
-
-    print(response['name'], response['genres'])
-
-#%% Generate New Dataset
-
-## THE CODE RUNNER SHOULD STARTS HERE
-IDExtract = []
-duplicates = []
-def getSongFromPlaylist(playlist_url):
-
-  playlist_id = re.search(r'(?<=playlist/)\w+', playlist_url).group()
-
-  # Playlist Detail
-  url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-
-  payload={}
-  headers = {
-    'Authorization': f'Bearer {AccessToken}'
-  }
-
-  response = requests.get(url, headers=headers, data=payload).json()
-  # print(response['items'][0]['track']['popularity'])
-
-  for j in response['items']:
-    # print(j['items'][0]['track']['popularity'])
-    print(len(j))
-
-  # id_list = [song['track']['id'] for song in response['items']]
-  # for _ in id_list:
-  #   if _ not in IDExtract:
-  #     if len(IDExtract) <= 1000:
-  #       IDExtract.append(_)
-  #     else:
-  #       pass
-  #   else:
-  #     # Duplicates
-  #     duplicates.append('0')
-
-# getSongFromPlaylist('https://open.spotify.com/playlist/2usrWKLYxYdm3aqWThf7G9?si=47b7293a6fad4ca7')
-#%%
-getSongFromPlaylist('https://open.spotify.com/playlist/1X1zynBURpogqyLjnOEHB6?si=652bfc1d00684f0c')
-
-# %% Run Several Playlists
-
-origin = [
-  # Spotify Top Hits
-  'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M?si=47c5db11a2984dae',
-  'https://open.spotify.com/playlist/37i9dQZF1DWUa8ZRTfalHk?si=b4c1974e00cb4698',
-  'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq?si=ba3ab09620f24252',
-  'https://open.spotify.com/playlist/37i9dQZF1DXcRXFNfZr7Tp?si=2c26cc0fa6c949e0',
-  'https://open.spotify.com/playlist/37i9dQZF1DXa2PvUpywmrr?si=406809633a9646a7',
-  'https://open.spotify.com/playlist/37i9dQZF1DX0s5kDXi1oC5?si=0f938c49b3274f21',
-  'https://open.spotify.com/playlist/37i9dQZF1DXbYM3nMM0oPk?si=00576616a64f47c2',
-  'https://open.spotify.com/playlist/37i9dQZF1DX4WYpdgoIcn6?si=7d7fab35dca4474a',
-  'https://open.spotify.com/playlist/37i9dQZF1DWUxHPh2rEiHr?si=0aead92c68d244cb',
-  'https://open.spotify.com/playlist/37i9dQZF1DWUZMtnnlvJ9p?si=7c82ce34b989430f',
-  # Daily Mix
-  'https://open.spotify.com/playlist/37i9dQZF1E36tDNad90Y3t?si=95eade9c78fd48ba',
-  'https://open.spotify.com/playlist/37i9dQZF1E38Hv1gtWXC9c?si=7e34affc1795445e',
-  'https://open.spotify.com/playlist/37i9dQZF1E38VEJXRB5dXu?si=e9ebdd1909374670',
-  'https://open.spotify.com/playlist/37i9dQZF1E3a6zdo1PRnea?si=bf902b07cca7427d',
-  'https://open.spotify.com/playlist/37i9dQZF1E382LwL9sLLx3?si=eaeb6d8c016b4139',
-  'https://open.spotify.com/playlist/37i9dQZF1E37qEfazBk7l0?si=4328794eaf3e4136'
-]
-
-
-### ACTUAL RUNNER ###
-
-# Playlist List
-for plist in origin:
-  # Song in Playlist
-  getSongFromPlaylist(plist)
-
-IDExtract
-
-#%% Get Audio Features
-def getAudioFeatures(songID):
-  # Playlist Detail
-  url = f"https://api.spotify.com/v1/audio-features/{songID}"
-
-  payload={}
-  headers = {
-    'Authorization': f'Bearer {AccessToken}'
-  }
-
-  response = requests.get(url, headers=headers, data=payload).json()
-  return response
-
-features = ['acousticness', 'danceability', 'duration_ms', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'valence']
-
-
-#%%
-print(getAudioFeatures('47M43J3F3lCCI26YHUyOx8'))
-# %%
-print(f'Successfully Extracted {len(IDExtract)} songs, found {len(duplicates)} duplicates.')
-
-
-
-#%%
-### Runner V2.0
+#%% ### Runner V2.0
 
 main_data = []
 id_list = []
@@ -308,7 +143,6 @@ print(main_data)
 
 
 #%% Saving the entire scrapping in CSV
-import csv
 
 # Specify the file path for the CSV file
 csv_file_path = 'output.csv'
@@ -327,7 +161,6 @@ with open(csv_file_path, 'w', newline='') as file:
 print(f"CSV file '{csv_file_path}' created successfully.")
 
 #%% Dataframe creation
-import pandas as pd
 
 df = pd.read_csv('output.csv')
 
