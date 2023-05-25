@@ -150,7 +150,7 @@ csv_file_path = 'output.csv'
 # Open the CSV file in write mode
 with open(csv_file_path, 'w', newline='') as file:
   writer = csv.writer(file)
-  writer.writerow(['songID', 'songTitle', 'SongArtistTitle', 'popularity', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'type', 'id', 'track_href', 'analysis_url', 'duration_ms', 'time_signature'])
+  writer.writerow(['songID', 'songTitle', 'SongArtistTitle', 'popularity', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'type', 'id', 'uri', 'track_href', 'analysis_url', 'duration_ms', 'time_signature'])
   
   iterator = 0
   # Iterate over each list in abc and write it as a row in the CSV file
@@ -161,6 +161,6 @@ with open(csv_file_path, 'w', newline='') as file:
 print(f"CSV file '{csv_file_path}' created successfully.")
 
 #%% Dataframe creation
-df = pd.read_csv('output.csv')
+df = pd.read_csv('database/output.csv')
 
 df.iloc[0]
