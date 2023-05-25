@@ -161,6 +161,6 @@ with open(csv_file_path, 'w', newline='') as file:
 print(f"CSV file '{csv_file_path}' created successfully.")
 
 #%% Dataframe creation
-df = pd.read_csv('database/output.csv')
+df = pd.read_csv('output.csv')
 
 df.iloc[0]
