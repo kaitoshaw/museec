@@ -210,6 +210,7 @@ def getArtistGenre(artist_id):
   return genreFetch['genres']
   
 formatted = []
+idChecker = []
 
 def getSongDatas(id):
   formatted = []
@@ -262,43 +263,72 @@ def playlistExtract(playlist_url):
   }
 
   response = requests.get(url, headers=headers, data=payload).json()
+  _data = [getSongDatas(song['track']['id']) for song in response['items'] if song['track']['id'] not in idChecker]
+  idChecker.extend(song['track']['id'] for song in response['items'] if song['track']['id'] not in idChecker)
 
-  _data = [getSongDatas(song['track']['id']) for song in response['items']]
+  # _data = [[getSongDatas(song['track']['id']) for song in response['items'] if song not in idChecker]]
 
   for _singular in _data:
     main_data.append(_singular)
 
-# origin = [
-#   # Spotify Top Hits
-#   'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M?si=47c5db11a2984dae',
-#   'https://open.spotify.com/playlist/37i9dQZF1DWUa8ZRTfalHk?si=b4c1974e00cb4698',
-#   'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq?si=ba3ab09620f24252',
-#   'https://open.spotify.com/playlist/37i9dQZF1DXcRXFNfZr7Tp?si=2c26cc0fa6c949e0',
-#   'https://open.spotify.com/playlist/37i9dQZF1DXa2PvUpywmrr?si=406809633a9646a7',
-#   'https://open.spotify.com/playlist/37i9dQZF1DX0s5kDXi1oC5?si=0f938c49b3274f21',
-#   'https://open.spotify.com/playlist/37i9dQZF1DXbYM3nMM0oPk?si=00576616a64f47c2',
-#   'https://open.spotify.com/playlist/37i9dQZF1DX4WYpdgoIcn6?si=7d7fab35dca4474a',
-#   'https://open.spotify.com/playlist/37i9dQZF1DWUxHPh2rEiHr?si=0aead92c68d244cb',
-#   'https://open.spotify.com/playlist/37i9dQZF1DWUZMtnnlvJ9p?si=7c82ce34b989430f',
-#   # Daily Mix
-#   'https://open.spotify.com/playlist/37i9dQZF1E36tDNad90Y3t?si=95eade9c78fd48ba',
-#   'https://open.spotify.com/playlist/37i9dQZF1E38Hv1gtWXC9c?si=7e34affc1795445e',
-#   'https://open.spotify.com/playlist/37i9dQZF1E38VEJXRB5dXu?si=e9ebdd1909374670',
-#   'https://open.spotify.com/playlist/37i9dQZF1E3a6zdo1PRnea?si=bf902b07cca7427d',
-#   'https://open.spotify.com/playlist/37i9dQZF1E382LwL9sLLx3?si=eaeb6d8c016b4139',
-#   'https://open.spotify.com/playlist/37i9dQZF1E37qEfazBk7l0?si=4328794eaf3e4136'
-# ]
-
 origin = [
-  # 'https://open.spotify.com/playlist/0ytnvx66xQwraz1WeAGtNm?si=7cdbfba2590c40d1',
-  # 'https://open.spotify.com/playlist/0kgsupLF9ff61IvU005ZZX?si=156d749ce6b348f8',
-  # 'https://open.spotify.com/playlist/0qLqTqVGRYf4QLrdBMfx68?si=4501a339ef1a434d',
-  'https://open.spotify.com/playlist/15JzYvG16yNBeTgjQCORiO?si=14f63563cbce49d7'
+  # Spotify Top Hits
+  'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M?si=47c5db11a2984dae',
+  'https://open.spotify.com/playlist/37i9dQZF1DWUa8ZRTfalHk?si=b4c1974e00cb4698',
+  'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq?si=ba3ab09620f24252',
+  'https://open.spotify.com/playlist/37i9dQZF1DXcRXFNfZr7Tp?si=2c26cc0fa6c949e0',
+  'https://open.spotify.com/playlist/37i9dQZF1DXa2PvUpywmrr?si=406809633a9646a7',
+  'https://open.spotify.com/playlist/37i9dQZF1DX0s5kDXi1oC5?si=0f938c49b3274f21',
+  'https://open.spotify.com/playlist/37i9dQZF1DXbYM3nMM0oPk?si=00576616a64f47c2',
+  'https://open.spotify.com/playlist/37i9dQZF1DX4WYpdgoIcn6?si=7d7fab35dca4474a',
+  'https://open.spotify.com/playlist/37i9dQZF1DWUxHPh2rEiHr?si=0aead92c68d244cb',
+  'https://open.spotify.com/playlist/37i9dQZF1DWUZMtnnlvJ9p?si=7c82ce34b989430f',
+  # Daily Mix
+  'https://open.spotify.com/playlist/37i9dQZF1E36tDNad90Y3t?si=95eade9c78fd48ba',
+  'https://open.spotify.com/playlist/37i9dQZF1E38Hv1gtWXC9c?si=7e34affc1795445e',
+  'https://open.spotify.com/playlist/37i9dQZF1E38VEJXRB5dXu?si=e9ebdd1909374670',
+  'https://open.spotify.com/playlist/37i9dQZF1E3a6zdo1PRnea?si=bf902b07cca7427d',
+  'https://open.spotify.com/playlist/37i9dQZF1E382LwL9sLLx3?si=eaeb6d8c016b4139',
+  'https://open.spotify.com/playlist/37i9dQZF1E37qEfazBk7l0?si=4328794eaf3e4136'
 ]
 
+playlistCounter = 0
 
 for _playlist in origin:
   playlistExtract(_playlist)
-  print(len(main_data))
+  
+  # Counter
+  playlistCounter += 1
+  print(f'Extracting {playlistCounter}/{len(origin)}')
+  # print(len(main_data))
+
 #%%
-print(main_data[0])
+# print(main_data)
+print(main_data)
+
+
+#%% Saving the entire scrapping in CSV
+import csv
+
+# Specify the file path for the CSV file
+csv_file_path = 'output.csv'
+
+# Open the CSV file in write mode
+with open(csv_file_path, 'w', newline='') as file:
+  writer = csv.writer(file)
+  writer.writerow(['songID', 'songTitle', 'SongArtistTitle', 'popularity', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'type', 'id', 'track_href', 'analysis_url', 'duration_ms', 'time_signature'])
+  
+  iterator = 0
+  # Iterate over each list in abc and write it as a row in the CSV file
+  for row in main_data:
+    writer.writerow(row)
+    iterator += 1
+    print(f"Wrote row number '{iterator}' successfully.")
+print(f"CSV file '{csv_file_path}' created successfully.")
+
+#%% Dataframe creation
+import pandas as pd
+
+df = pd.read_csv('output.csv')
+
+df.iloc[0]
